@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +29,18 @@ import static com.jyang.busquedaml.utils.Constantes.KEY_PRODUCTO_ID;
 
 public class DescripcionActivity extends AppCompatActivity implements  DescripcionContract.View{
 
+    private static final String TAG = "DescripcionActivity";
+
     private TextView titulo;
     private TextView precio;
     private TextView descripcion;
+    private TextView textoError;
     private ImageView imageView;
     private View layoutData;
     private View layoutError;
     private String idProducto;
+    private Button botonReintentar;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +48,7 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         setContentView(R.layout.activity_descripcion);
 
         findComponents();
-
+        listeners();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getResources().getString(R.string.descripcion));
@@ -52,13 +60,13 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Exception {
-                        //progress.show();
+                        showLoading();
                     }
                 })
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
-                        //progress.dismiss();
+                        stopLoading();
                     }
                 })
                 .subscribe(new OnDescripcionResponse(this));
@@ -71,11 +79,49 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         layoutData = findViewById(R.id.layoutData);
         layoutError = findViewById(R.id.layoutError);
         imageView = findViewById(R.id.imagenProducto);
+        botonReintentar = findViewById(R.id.botonReintentar);
+        progressBar = findViewById(R.id.loading);
+        textoError = findViewById(R.id.textoError);
 
         Intent mIntent = getIntent();
         this.idProducto = mIntent.getStringExtra(KEY_PRODUCTO_ID);
         titulo.setText(idProducto);
 
+    }
+
+
+    private void listeners(){
+        botonReintentar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DescripcionService descripcionService = new DescripcionService();
+                descripcionService.productos(idProducto)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(new Consumer<Disposable>() {
+                            @Override
+                            public void accept(Disposable disposable) throws Exception {
+                                showLoading();
+                            }
+                        })
+                        .doFinally(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                stopLoading();
+                            }
+                        })
+                        .subscribe(new OnDescripcionResponse(DescripcionActivity.this));
+            }
+        });
+    }
+
+    public void showLoading(){
+        layoutData.setVisibility(View.GONE);
+        layoutError.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void stopLoading(){
+        progressBar.setVisibility(View.GONE);
     }
 
 
@@ -93,12 +139,14 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
                 .load(descripcion.getImagen())
                 .apply(new RequestOptions().placeholder(R.drawable.ic_place_holder).error(R.drawable.ic_place_holder))
                 .into(imageView);
+        layoutData.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onResponseFailure(Throwable throwable) {
         layoutData.setVisibility(View.GONE);
         layoutError.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "error " + throwable.toString(), Toast.LENGTH_SHORT).show();
+        textoError.setText(getResources().getString(R.string.errorDescripcionServicio));
+        Log.e(TAG, "error", throwable);
     }
 }

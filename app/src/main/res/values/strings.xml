@@ -9,5 +9,7 @@
     <string name="productos">Productos</string>
     <string name="descripcion">Descripcion</string>
     <string name="busqueda">Búsqueda de producto</string>
+    <string name="sinDatos">No encontramos productos con la búsqueda:</string>
+    <string name="errorDescripcionServicio">Hubo un error al obtener la descripción del producto</string>
 
 </resources>

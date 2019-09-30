@@ -4,11 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,20 +34,23 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
 
     private static final String TAG = "ProductosActivity";
     private TextView textView;
+    private TextView busquedaSindatos;
     private View layoutData;
     private View layoutError;
+    private View layoutSinDatos;
     private ProductosAdapter productosAdapter;
     private List<Producto> productos;
     private RecyclerView rProductos;
     private String busqueda;
-    //private ProgressDialog progress;
+    private Button botonReintentar;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_productos);
         findComponents();
-
+        listeners();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getResources().getString(R.string.productos));
@@ -58,13 +62,13 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Exception {
-                        //progress.show();
+                        showLoading();
                     }
                 })
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
-                        //progress.dismiss();
+                        stopLoading();
                     }
                 })
                 .subscribe(new OnProductosResponse(this));
@@ -75,12 +79,13 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
         textView = findViewById(R.id.busqueda);
         layoutData = findViewById(R.id.layoutData);
         layoutError = findViewById(R.id.layoutError);
+        layoutSinDatos = findViewById(R.id.layoutSinDatos);
         rProductos = findViewById(R.id.recyclerview);
-        /*if (progress == null) {
-            progress = new ProgressDialog(this);
-            progress.setTitle(getString(R.string.titulo_loading));
-            progress.setMessage(getString(R.string.mensaje_loading));
-        }*/
+        botonReintentar = findViewById(R.id.botonReintentar);
+        progressBar = findViewById(R.id.loading);
+        busquedaSindatos = findViewById(R.id.busquedaSindatos);
+
+
         this.productos = new ArrayList<>();
         LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
         rProductos.setLayoutManager(llm);
@@ -93,15 +98,59 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
 
     }
 
+    private void listeners(){
+        botonReintentar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ProductosService productosService = new ProductosService();
+                productosService.productos(busqueda)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(new Consumer<Disposable>() {
+                            @Override
+                            public void accept(Disposable disposable) throws Exception {
+                                showLoading();
+                            }
+                        })
+                        .doFinally(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                stopLoading();
+                            }
+                        })
+                        .subscribe(new OnProductosResponse(ProductosActivity.this));
+            }
+        });
+    }
+
 
     @Override
     public void setDataToRecyclerView(List<Producto> productos) {
-        layoutData.setVisibility(View.VISIBLE);
-        layoutError.setVisibility(View.GONE);
         this.productos.clear();
-        this.productos.addAll(productos);
-        productosAdapter.notifyDataSetChanged();
+        layoutError.setVisibility(View.GONE);
 
+        if ( productos.size() == 0) {
+            layoutData.setVisibility(View.GONE);
+            busquedaSindatos.setText(busqueda);
+            layoutSinDatos.setVisibility(View.VISIBLE);
+
+        } else {
+            layoutSinDatos.setVisibility(View.GONE);
+            layoutData.setVisibility(View.VISIBLE);
+            this.productos.addAll(productos);
+            productosAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public void showLoading(){
+        layoutData.setVisibility(View.GONE);
+        layoutError.setVisibility(View.GONE);
+        layoutSinDatos.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void stopLoading(){
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -113,9 +162,9 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
     @Override
     public void onResponseFailure(Throwable throwable) {
         layoutData.setVisibility(View.GONE);
+        layoutSinDatos.setVisibility(View.GONE);
         layoutError.setVisibility(View.VISIBLE);
         Log.e(TAG, "error", throwable);
-        Toast.makeText(this, "error " + throwable.toString(), Toast.LENGTH_SHORT).show();
 
     }
 
