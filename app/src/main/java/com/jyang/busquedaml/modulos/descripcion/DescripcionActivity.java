@@ -33,6 +33,7 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
 
     private TextView titulo;
     private TextView precio;
+    private TextView cantidadDisponible;
     private TextView descripcion;
     private TextView textoError;
     private ImageView imageView;
@@ -82,6 +83,7 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         botonReintentar = findViewById(R.id.botonReintentar);
         progressBar = findViewById(R.id.loading);
         textoError = findViewById(R.id.textoError);
+        cantidadDisponible = findViewById(R.id.cantidad_disponible);
 
         Intent mIntent = getIntent();
         this.idProducto = mIntent.getStringExtra(KEY_PRODUCTO_ID);
@@ -135,6 +137,7 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
     public void onResponseSuccess(DescripcionResponse descripcion) {
         titulo.setText(descripcion.getTitulo());
         precio.setText(Format.formatDecimalSignal(descripcion.getPrecio()));
+        cantidadDisponible.setText(getResources().getString(R.string.cantidad_disponible) + descripcion.getCantidad_disponible());
         Glide.with(this)
                 .load(descripcion.getImagen())
                 .apply(new RequestOptions().placeholder(R.drawable.ic_place_holder).error(R.drawable.ic_place_holder))

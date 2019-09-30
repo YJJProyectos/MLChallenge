@@ -13,57 +13,75 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <!--<androidx.cardview.widget.CardView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="0dp"
-                app:cardElevation="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"> -->
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutPrincipal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent">
+
                     <ImageView
                         android:id="@+id/imagenProducto"
-                        android:layout_width="0dp"
+                        android:layout_width="200dp"
                         android:layout_height="@dimen/productos_thumbnail"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="producto imagen"
                         android:scaleType="fitXY"
-                        android:layout_weight="0.7"
-                        android:contentDescription="producto imagen" />
-                    <LinearLayout
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/layoutPrincipal"
+                        app:layout_constraintTop_toTopOf="@+id/layoutPrincipal" />
+
+                    <TextView
+                        android:id="@+id/tituloProducto"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.3"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tituloProducto"
-                            android:text="DESCRIPCION"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:gravity="center"
-                            android:layout_weight="0.5"
-                            />
-                        <TextView
-                            android:id="@+id/precioProducto"
-                            android:text="$"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:gravity="center"
-                            android:layout_weight="0.5"
-                            />
-                    </LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:text="DESCRIPCION"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/imagenProducto"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/precioProducto"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center"
+                        android:text="$"
+                        app:layout_constraintEnd_toEndOf="@+id/tituloProducto"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/tituloProducto"
+                        app:layout_constraintTop_toBottomOf="@+id/tituloProducto" />
+
+                    <TextView
+                        android:id="@+id/cantidad_disponible"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center"
+                        android:text="1"
+                        app:layout_constraintEnd_toEndOf="@+id/precioProducto"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/precioProducto"
+                        app:layout_constraintTop_toBottomOf="@+id/precioProducto" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                </LinearLayout>
-
-
-            <!--</androidx.cardview.widget.CardView> -->
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

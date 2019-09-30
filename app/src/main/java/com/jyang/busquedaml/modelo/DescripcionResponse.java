@@ -39,6 +39,25 @@ public class DescripcionResponse {
     @Expose
     private List<ImagenResponse> imagenes;
 
+    @SerializedName("attributes")
+    @Expose
+    private List<Atributo> atributos;
+
+    public List<ImagenResponse> getImagenes() {
+        return imagenes;
+    }
+
+    public void setImagenes(List<ImagenResponse> imagenes) {
+        this.imagenes = imagenes;
+    }
+
+    public List<Atributo> getAtributos() {
+        return atributos;
+    }
+
+    public void setAtributos(List<Atributo> atributos) {
+        this.atributos = atributos;
+    }
 
     public String getId() {
         return id;
