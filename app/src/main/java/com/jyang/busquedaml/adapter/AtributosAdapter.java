@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jyang.busquedaml.R;
 import com.jyang.busquedaml.modelo.Atributo;
+import com.jyang.busquedaml.modelo.AtributoEstructura;
 
 import java.util.List;
 
@@ -52,7 +53,15 @@ public class AtributosAdapter extends RecyclerView.Adapter<AtributosAdapter.Atri
     public void onBindViewHolder(@NonNull AtributosViewHolder holder, int position) {
         Atributo atributo = this.atributos.get(position);
         holder.atributoNombre.setText(atributo.getNombre());
-        holder.atributoValor.setText(atributo.getValor());
+        if ( atributo.getValor() != null && !atributo.getValor().isEmpty()) {
+            holder.atributoValor.setText(atributo.getValor());
+        } else {
+            if (atributo.getAtributoEstructura() != null
+                    && atributo.getAtributoEstructura().getNumber() != null
+                    && atributo.getAtributoEstructura().getUnit() != null) {
+                holder.atributoValor.setText(atributo.getAtributoEstructura().getNumber() + " " + atributo.getAtributoEstructura().getUnit());
+            }
+        }
     }
 
     @Override

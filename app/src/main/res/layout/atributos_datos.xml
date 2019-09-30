@@ -14,7 +14,7 @@
         android:gravity="center"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
-        android:text="DESCRIPCION"
+        android:text="@string/no_hay_atributo"
         />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_marginBottom="30dp"
         android:layout_weight="0.5"
         android:gravity="center"
-        android:text="PRECIO"
+        android:text="@string/no_hay_atributo"
         />
 
 

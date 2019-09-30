@@ -17,6 +17,17 @@ public class Atributo {
     @Expose
     private String valor;
 
+    @SerializedName("value_struct")
+    @Expose
+    private AtributoEstructura atributoEstructura;
+
+    public AtributoEstructura getAtributoEstructura() {
+        return atributoEstructura;
+    }
+
+    public void setAtributoEstructura(AtributoEstructura atributoEstructura) {
+        this.atributoEstructura = atributoEstructura;
+    }
 
     public String getId() {
         return id;

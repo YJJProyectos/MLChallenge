@@ -14,5 +14,6 @@
     <string name="cantidad_disponible">Cantidad disponible:</string>
     <string name="atributos">Atributos</string>
     <string name="cantidad_vendido">Cantidad vendido:</string>
+    <string name="no_hay_atributo">Sin datos</string>
 
 </resources>
