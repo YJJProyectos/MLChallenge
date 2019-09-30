@@ -1,6 +1,8 @@
 package com.jyang.busquedaml.modulos.descripcion;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +17,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.jyang.busquedaml.R;
+import com.jyang.busquedaml.adapter.AtributosAdapter;
+import com.jyang.busquedaml.modelo.Atributo;
 import com.jyang.busquedaml.modelo.DescripcionResponse;
 import com.jyang.busquedaml.service.producto.DescripcionService;
 import com.jyang.busquedaml.utils.Format;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -31,10 +38,13 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
 
     private static final String TAG = "DescripcionActivity";
 
+    private List<Atributo> atributos;
+    private RecyclerView rvAtributos;
+    private AtributosAdapter atributosAdapter;
     private TextView titulo;
     private TextView precio;
     private TextView cantidadDisponible;
-    private TextView descripcion;
+    private TextView cantidadVendido;
     private TextView textoError;
     private ImageView imageView;
     private View layoutData;
@@ -84,11 +94,19 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         progressBar = findViewById(R.id.loading);
         textoError = findViewById(R.id.textoError);
         cantidadDisponible = findViewById(R.id.cantidad_disponible);
+        rvAtributos = findViewById(R.id.rvAtributos);
+        cantidadVendido = findViewById(R.id.cantidad_vendido);
 
         Intent mIntent = getIntent();
         this.idProducto = mIntent.getStringExtra(KEY_PRODUCTO_ID);
         titulo.setText(idProducto);
 
+        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+        rvAtributos.setLayoutManager(llm);
+        rvAtributos.setNestedScrollingEnabled(false);
+        this.atributos = new ArrayList<>();
+        atributosAdapter = new AtributosAdapter(this.atributos, this);
+        rvAtributos.setAdapter(atributosAdapter);
     }
 
 
@@ -138,6 +156,11 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         titulo.setText(descripcion.getTitulo());
         precio.setText(Format.formatDecimalSignal(descripcion.getPrecio()));
         cantidadDisponible.setText(getResources().getString(R.string.cantidad_disponible) + descripcion.getCantidad_disponible());
+        cantidadVendido.setText(getResources().getString(R.string.cantidad_vendido) + descripcion.getCantidad_vendido());
+
+        this.atributos.clear();
+        this.atributos.addAll(descripcion.getAtributos());
+        this.atributosAdapter.notifyDataSetChanged();
         Glide.with(this)
                 .load(descripcion.getImagen())
                 .apply(new RequestOptions().placeholder(R.drawable.ic_place_holder).error(R.drawable.ic_place_holder))
@@ -150,6 +173,6 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         layoutData.setVisibility(View.GONE);
         layoutError.setVisibility(View.VISIBLE);
         textoError.setText(getResources().getString(R.string.errorDescripcionServicio));
-        Log.e(TAG, "error", throwable);
+        Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
     }
 }

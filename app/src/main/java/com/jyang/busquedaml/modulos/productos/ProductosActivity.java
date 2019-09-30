@@ -164,7 +164,7 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
         layoutData.setVisibility(View.GONE);
         layoutSinDatos.setVisibility(View.GONE);
         layoutError.setVisibility(View.VISIBLE);
-        Log.e(TAG, "error", throwable);
+        Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
 
     }
 
