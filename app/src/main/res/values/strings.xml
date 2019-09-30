@@ -12,8 +12,7 @@
     <string name="sinDatos">No encontramos productos con la búsqueda:</string>
     <string name="errorDescripcionServicio">Hubo un error al obtener la descripción del producto</string>
     <string name="cantidad_disponible">Cantidad disponible:</string>
-    <string name="atributos">Atributos</string>
     <string name="cantidad_vendido">Cantidad vendido:</string>
     <string name="no_hay_atributo">Sin datos</string>
-
+    <string name="atributos">Atributos</string>
 </resources>

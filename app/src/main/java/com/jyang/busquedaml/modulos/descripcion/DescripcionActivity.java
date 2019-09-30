@@ -18,8 +18,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.jyang.busquedaml.R;
 import com.jyang.busquedaml.adapter.AtributosAdapter;
+import com.jyang.busquedaml.adapter.DescripcionImagenesAdapter;
 import com.jyang.busquedaml.modelo.Atributo;
 import com.jyang.busquedaml.modelo.DescripcionResponse;
+import com.jyang.busquedaml.modelo.ImagenResponse;
 import com.jyang.busquedaml.service.producto.DescripcionService;
 import com.jyang.busquedaml.utils.Format;
 
@@ -39,8 +41,11 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
     private static final String TAG = "DescripcionActivity";
 
     private List<Atributo> atributos;
+    private List<ImagenResponse> imagenes;
     private RecyclerView rvAtributos;
+    private RecyclerView rvImagenes;
     private AtributosAdapter atributosAdapter;
+    private DescripcionImagenesAdapter descripcionImagenesAdapter;
     private TextView titulo;
     private TextView precio;
     private TextView cantidadDisponible;
@@ -96,6 +101,7 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         cantidadDisponible = findViewById(R.id.cantidad_disponible);
         rvAtributos = findViewById(R.id.rvAtributos);
         cantidadVendido = findViewById(R.id.cantidad_vendido);
+        rvImagenes = findViewById(R.id.rvImagenes);
 
         Intent mIntent = getIntent();
         this.idProducto = mIntent.getStringExtra(KEY_PRODUCTO_ID);
@@ -107,6 +113,13 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         this.atributos = new ArrayList<>();
         atributosAdapter = new AtributosAdapter(this.atributos, this);
         rvAtributos.setAdapter(atributosAdapter);
+
+        LinearLayoutManager llmImagenes = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        rvImagenes.setLayoutManager(llmImagenes);
+        this.imagenes = new ArrayList<>();
+        descripcionImagenesAdapter = new DescripcionImagenesAdapter(this.imagenes, this);
+        rvImagenes.setAdapter(descripcionImagenesAdapter);
+
     }
 
 
@@ -161,6 +174,11 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         this.atributos.clear();
         this.atributos.addAll(descripcion.getAtributos());
         this.atributosAdapter.notifyDataSetChanged();
+
+        this.imagenes.clear();
+        this.imagenes.addAll(descripcion.getImagenes());
+        this.descripcionImagenesAdapter.notifyDataSetChanged();
+
         Glide.with(this)
                 .load(descripcion.getImagen())
                 .apply(new RequestOptions().placeholder(R.drawable.ic_place_holder).error(R.drawable.ic_place_holder))

@@ -101,6 +101,19 @@
                         app:layout_constraintTop_toBottomOf="@+id/cantidad_disponible" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvImagenes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/imagenCard"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/imagenCard"
+                    app:layout_constraintTop_toBottomOf="@+id/imagenCard"
+                    android:orientation="horizontal"
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
+
                 <TextView
                     android:id="@+id/atributo"
                     android:layout_width="match_parent"
@@ -108,10 +121,10 @@
                     android:text="@string/atributos"
                     android:gravity="center"
                     android:textSize="25dp"
-                    app:layout_constraintEnd_toEndOf="@+id/imagenCard"
+                    app:layout_constraintEnd_toEndOf="@+id/rvImagenes"
                     app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="@+id/imagenCard"
-                    app:layout_constraintTop_toBottomOf="@+id/imagenCard"
+                    app:layout_constraintStart_toStartOf="@+id/rvImagenes"
+                    app:layout_constraintTop_toBottomOf="@+id/rvImagenes"
                     />
 
                 <androidx.recyclerview.widget.RecyclerView

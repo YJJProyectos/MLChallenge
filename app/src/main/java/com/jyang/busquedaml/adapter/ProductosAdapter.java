@@ -2,26 +2,19 @@ package com.jyang.busquedaml.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.jyang.busquedaml.R;
 import com.jyang.busquedaml.modelo.Producto;
 import com.jyang.busquedaml.modulos.productos.OnItemClickListener;
-import com.jyang.busquedaml.modulos.productos.ProductosActivity;
 import com.jyang.busquedaml.utils.Format;
 
 import java.util.List;
@@ -73,19 +66,6 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.Prod
         // loading album cover using Glide library
         Glide.with((Activity) mContext)
                 .load(producto.getImagen())
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        //holder.imageView.setVisibility(View.GONE);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        //holder.imageView.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
                 .apply(new RequestOptions().placeholder(R.drawable.ic_place_holder).error(R.drawable.ic_place_holder))
                 .into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
