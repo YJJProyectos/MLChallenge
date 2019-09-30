@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">BusquedaML</string>
+    <string name="busquedaFiltro">Producto</string>
+    <string name="reintentar">Reintentar</string>
+    <string name="errorBusqueda">Hubo un error al obtener los productos</string>
+    <string name="mensaje_loading">Cargando...</string>
+    <string name="titulo_loading" />
+    <string name="resultadoBusqueda">Búsqueda:  </string>
+    <string name="productos">Productos</string>
+    <string name="descripcion">Descripcion</string>
+    <string name="busqueda">Búsqueda de producto</string>
+
+</resources>
