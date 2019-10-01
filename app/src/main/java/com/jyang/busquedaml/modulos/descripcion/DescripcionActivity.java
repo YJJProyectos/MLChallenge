@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -22,21 +21,16 @@ import com.jyang.busquedaml.adapter.DescripcionImagenesAdapter;
 import com.jyang.busquedaml.modelo.Atributo;
 import com.jyang.busquedaml.modelo.DescripcionResponse;
 import com.jyang.busquedaml.modelo.ImagenResponse;
-import com.jyang.busquedaml.service.producto.DescripcionService;
 import com.jyang.busquedaml.utils.Format;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 
 import static com.jyang.busquedaml.utils.Constantes.KEY_PRODUCTO_ID;
 
 
-public class DescripcionActivity extends AppCompatActivity implements  DescripcionContract.View{
+public class DescripcionActivity extends AppCompatActivity implements  DescripcionContract.View {
 
     private static final String TAG = "DescripcionActivity";
 
@@ -58,6 +52,8 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
     private Button botonReintentar;
     private ProgressBar progressBar;
 
+    private DescripcionPresenter descripcionPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,23 +65,9 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getResources().getString(R.string.descripcion));
 
+        this.descripcionPresenter = new DescripcionPresenter(this);
+        this.descripcionPresenter.requestDescripcionData(this.idProducto);
 
-        DescripcionService descripcionService = new DescripcionService();
-        descripcionService.productos(this.idProducto)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        showLoading();
-                    }
-                })
-                .doFinally(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        stopLoading();
-                    }
-                })
-                .subscribe(new OnDescripcionResponse(this));
 
     }
 
@@ -127,22 +109,7 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
         botonReintentar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DescripcionService descripcionService = new DescripcionService();
-                descripcionService.productos(idProducto)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe(new Consumer<Disposable>() {
-                            @Override
-                            public void accept(Disposable disposable) throws Exception {
-                                showLoading();
-                            }
-                        })
-                        .doFinally(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                stopLoading();
-                            }
-                        })
-                        .subscribe(new OnDescripcionResponse(DescripcionActivity.this));
+                descripcionPresenter.requestDescripcionData(idProducto);
             }
         });
     }
@@ -187,10 +154,34 @@ public class DescripcionActivity extends AppCompatActivity implements  Descripci
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.descripcionPresenter.onDestroy();
+    }
+
+    @Override
     public void onResponseFailure(Throwable throwable) {
-        layoutData.setVisibility(View.GONE);
-        layoutError.setVisibility(View.VISIBLE);
-        textoError.setText(getResources().getString(R.string.errorDescripcionServicio));
+        showErrorDescripcionService(getResources().getString(R.string.errorDescripcionServicio));
         Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
     }
+
+    @Override
+    public void onResponseFailureConnection(Throwable throwable) {
+        showErrorDescripcionService(getResources().getString(R.string.errorConexionServicio));
+        Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
+    }
+
+
+    @Override
+    public void onResponseError() {
+        showErrorDescripcionService(getResources().getString(R.string.errorDescripcionServicio));
+    }
+
+    private void showErrorDescripcionService(String mensajeError){
+        layoutData.setVisibility(View.GONE);
+        layoutError.setVisibility(View.VISIBLE);
+        textoError.setText(mensajeError);
+    }
+
+
 }

@@ -15,4 +15,5 @@
     <string name="cantidad_vendido">Cantidad vendido:</string>
     <string name="no_hay_atributo">Sin datos</string>
     <string name="atributos">Atributos</string>
+    <string name="errorConexionServicio">Error: no hay internet, revise la conexión, por favor.</string>
 </resources>

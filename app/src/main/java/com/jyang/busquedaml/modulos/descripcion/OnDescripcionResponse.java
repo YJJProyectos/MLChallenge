@@ -2,17 +2,20 @@ package com.jyang.busquedaml.modulos.descripcion;
 
 import com.jyang.busquedaml.modelo.DescripcionResponse;
 
+import java.net.ConnectException;
+import java.net.UnknownHostException;
+
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import retrofit2.Response;
 
 public class OnDescripcionResponse implements SingleObserver<Response<DescripcionResponse>> {
 
-    private DescripcionContract.View viewDescripcion;
+    private DescripcionContract.Model.OnFinishListener onFinishListener;
     private Disposable mSubscription;
 
-    public OnDescripcionResponse(DescripcionContract.View viewDescripcion){
-        this.viewDescripcion = viewDescripcion;
+    public OnDescripcionResponse(DescripcionContract.Model.OnFinishListener onFinishListener){
+        this.onFinishListener = onFinishListener;
     }
 
     @Override
@@ -22,13 +25,23 @@ public class OnDescripcionResponse implements SingleObserver<Response<Descripcio
 
     @Override
     public void onSuccess(Response<DescripcionResponse> descripcionResponseResponse) {
-        viewDescripcion.onResponseSuccess(descripcionResponseResponse.body());
+
+        if (descripcionResponseResponse.isSuccessful()) {
+            onFinishListener.onFinished(descripcionResponseResponse.body());
+        } else {
+            onFinishListener.onFinishedError();
+        }
+
         this.mSubscription.dispose();
     }
 
     @Override
     public void onError(Throwable e) {
-        viewDescripcion.onResponseFailure(e);
+        if (e instanceof UnknownHostException || e instanceof ConnectException) {
+            onFinishListener.onFailureConnection(e);
+        } else {
+            onFinishListener.onFailure(e);
+        }
         this.mSubscription.dispose();
     }
 }

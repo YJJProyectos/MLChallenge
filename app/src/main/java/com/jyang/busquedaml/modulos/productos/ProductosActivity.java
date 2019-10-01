@@ -11,21 +11,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jyang.busquedaml.R;
 import com.jyang.busquedaml.adapter.ProductosAdapter;
 import com.jyang.busquedaml.modelo.Producto;
 import com.jyang.busquedaml.modulos.descripcion.DescripcionActivity;
-import com.jyang.busquedaml.service.productos.ProductosService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 
 import static com.jyang.busquedaml.utils.Constantes.FILTRO;
 import static com.jyang.busquedaml.utils.Constantes.KEY_PRODUCTO_ID;
@@ -35,6 +29,7 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
     private static final String TAG = "ProductosActivity";
     private TextView textView;
     private TextView busquedaSindatos;
+    private TextView tvError;
     private View layoutData;
     private View layoutError;
     private View layoutSinDatos;
@@ -44,6 +39,8 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
     private String busqueda;
     private Button botonReintentar;
     private ProgressBar progressBar;
+
+    private ProductosPresenter productosPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +53,8 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
         getSupportActionBar().setTitle(getResources().getString(R.string.productos));
 
 
-        ProductosService productosService = new ProductosService();
-        productosService.productos(this.busqueda)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        showLoading();
-                    }
-                })
-                .doFinally(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        stopLoading();
-                    }
-                })
-                .subscribe(new OnProductosResponse(this));
+        this.productosPresenter = new ProductosPresenter(this);
+        this.productosPresenter.requestProductosData(busqueda);
 
     }
 
@@ -84,6 +67,7 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
         botonReintentar = findViewById(R.id.botonReintentar);
         progressBar = findViewById(R.id.loading);
         busquedaSindatos = findViewById(R.id.busquedaSindatos);
+        tvError = findViewById(R.id.textoError);
 
 
         this.productos = new ArrayList<>();
@@ -102,26 +86,16 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
         botonReintentar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ProductosService productosService = new ProductosService();
-                productosService.productos(busqueda)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe(new Consumer<Disposable>() {
-                            @Override
-                            public void accept(Disposable disposable) throws Exception {
-                                showLoading();
-                            }
-                        })
-                        .doFinally(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                stopLoading();
-                            }
-                        })
-                        .subscribe(new OnProductosResponse(ProductosActivity.this));
+                productosPresenter.requestProductosData(busqueda);
             }
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.productosPresenter.onDestroy();
+    }
 
     @Override
     public void setDataToRecyclerView(List<Producto> productos) {
@@ -161,11 +135,27 @@ public class ProductosActivity extends AppCompatActivity implements ProductosCon
 
     @Override
     public void onResponseFailure(Throwable throwable) {
+        showErrorDescripcionService(getResources().getString(R.string.errorBusqueda));
+        Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
+
+    }
+
+    @Override
+    public void onResponseFailureConnection(Throwable throwable) {
+        showErrorDescripcionService(getResources().getString(R.string.errorConexionServicio));
+        Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
+    }
+
+    @Override
+    public void onResponseError() {
+        showErrorDescripcionService(getResources().getString(R.string.errorBusqueda));
+    }
+
+    private void showErrorDescripcionService(String mensajeError){
         layoutData.setVisibility(View.GONE);
         layoutSinDatos.setVisibility(View.GONE);
         layoutError.setVisibility(View.VISIBLE);
-        Log.e(TAG, "error " + throwable.getClass() + throwable.getMessage(), throwable);
-
+        tvError.setText(mensajeError);
     }
 
     @Override
